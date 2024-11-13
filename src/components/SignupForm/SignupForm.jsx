@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import * as authService from "../../services/authService";
 const SignupForm = (props) => {
   const navigate = useNavigate();
   const [message, setMessage] = useState([""]);
@@ -22,10 +22,14 @@ const SignupForm = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    updateMessage("");
-    console.log(formData); // this line will print the form data to the console
+    try {
+      const newUserResponse = await authService.signup(formData);
+      props.setUser(newUserResponse.user); // this line will update the user state in App.jsx
+      navigate("/"); // this line will navigate the user to the home page
+    } catch {
+      updateMessage("Sign up failed. Please try again.");
+    }
   };
-
   const { username, password, passwordConf } = formData;
 
   const isFormInvalid = () => {
